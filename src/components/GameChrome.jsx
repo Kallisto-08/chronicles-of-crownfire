@@ -90,26 +90,48 @@ export function LoadingScreen({ loading, logo, tip, background }) {
     <AnimatePresence>
       {loading ? (
         <motion.div
-          className="fixed inset-0 z-50 grid place-items-center bg-[#080608]/95"
+          className="fixed inset-0 z-50 grid place-items-center overflow-hidden bg-[#070405]"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          exit={{ opacity: 0, scale: 1.015 }}
+          transition={{ duration: 0.45, ease: "easeOut" }}
         >
-          <div className="relative w-[460px] max-w-[calc(100vw-48px)] overflow-hidden rounded-md border border-amber-500/35 bg-gradient-to-br from-stone-950 to-red-950/70 p-6 text-center shadow-blood">
-            {background ? <PixelImage src={background} className="absolute inset-0 h-full w-full object-cover opacity-20" /> : null}
-            <div className="relative">
-            <PixelImage src={logo} className="mx-auto h-20 w-20" />
-            <p className="mt-3 text-xs uppercase tracking-[0.28em] text-amber-300">Chronicles of</p>
-            <h2 className="font-display text-3xl font-black text-amber-100">Crownfire</h2>
-            <div className="mt-5 h-3 overflow-hidden rounded-sm border border-stone-700 bg-black/50">
+          {background ? <PixelImage src={background} className="absolute inset-0 h-full w-full object-cover opacity-35" /> : null}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(245,158,11,0.18),transparent_36%),linear-gradient(180deg,rgba(8,5,6,0.5),rgba(8,5,6,0.96))]" />
+          <motion.div
+            className="absolute left-1/2 top-1/2 h-[34rem] w-[34rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-amber-300/10"
+            animate={{ rotate: 360, scale: [1, 1.04, 1] }}
+            transition={{ rotate: { duration: 14, repeat: Infinity, ease: "linear" }, scale: { duration: 3.2, repeat: Infinity, ease: "easeInOut" } }}
+          />
+          <div className="relative w-[520px] max-w-[calc(100vw-40px)] px-4 text-center">
+            <motion.div
+              className="mx-auto grid h-36 w-36 place-items-center rounded-full border border-amber-300/25 bg-black/50 shadow-[0_0_60px_rgba(245,158,11,0.3),inset_0_0_34px_rgba(248,113,113,0.18)]"
+              initial={{ y: 10, opacity: 0.75 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.65, ease: "easeOut" }}
+            >
+              <PixelImage src={logo} className="h-24 w-24 drop-shadow-[0_0_20px_rgba(251,191,36,0.55)]" />
+            </motion.div>
+            <p className="mt-5 text-xs uppercase tracking-[0.32em] text-amber-300">Chronicles of</p>
+            <h2 className="font-display text-4xl font-black text-amber-100 drop-shadow-[0_0_18px_rgba(245,158,11,0.35)] sm:text-5xl">Crownfire</h2>
+            <p className="mt-3 text-sm text-stone-300">{tip}</p>
+            <div className="mx-auto mt-7 h-3 max-w-sm overflow-hidden rounded-sm border border-amber-500/25 bg-black/60 shadow-[inset_0_0_14px_rgba(0,0,0,0.75)]">
               <motion.div
-                className="h-full bg-gradient-to-r from-red-700 via-orange-500 to-amber-200"
-                initial={{ width: "8%" }}
+                className="h-full bg-gradient-to-r from-red-800 via-orange-500 to-amber-200 shadow-[0_0_18px_rgba(251,191,36,0.75)]"
+                initial={{ width: "6%" }}
                 animate={{ width: "100%" }}
-                transition={{ duration: 0.95, ease: "easeInOut" }}
+                transition={{ duration: 1.9, ease: "easeInOut" }}
               />
             </div>
-            <p className="mt-4 text-sm text-stone-300">{tip}</p>
+            <div className="mt-3 flex justify-center gap-2">
+              {[0, 1, 2].map((index) => (
+                <motion.span
+                  key={index}
+                  className="h-1.5 w-1.5 rounded-full bg-amber-300"
+                  animate={{ opacity: [0.25, 1, 0.25], y: [0, -3, 0] }}
+                  transition={{ duration: 1.1, repeat: Infinity, delay: index * 0.16, ease: "easeInOut" }}
+                />
+              ))}
             </div>
           </div>
         </motion.div>

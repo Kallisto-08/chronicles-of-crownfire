@@ -87,11 +87,15 @@ const VILLAGE_WORKER_SLOTS = 2;
 const UPGRADE_MINUTE_MS = 60 * 1000;
 const VALID_SCREENS = new Set(["battle", "map", "village", "inventory", "codex"]);
 const LOADING_TIPS = [
+  "The Crownfire awakens...",
   "Crownfire grows stronger with every battle.",
   "Upgrade the Blacksmith before fighting armored enemies.",
   "The Market unlocks potions and steadier campaign recovery.",
   "Guard can blunt a lethal enemy turn.",
 ];
+const BOOT_LOADING_MS = 2200;
+const ROUTE_LOADING_MS = 1250;
+const LOADING_EXIT_MS = 450;
 
 const INTRO_STORY = [
   {
@@ -1356,7 +1360,7 @@ function App() {
   const equipmentUpgradeAudioRef = useRef(null);
   const villageUpgradeAudioRef = useRef(null);
   const [enemyThinking, setEnemyThinking] = useState(false);
-  const [loading, setLoading] = useState({ active: false, tip: LOADING_TIPS[0] });
+  const [loading, setLoading] = useState({ active: true, tip: LOADING_TIPS[0] });
   const [selectedBuilding, setSelectedBuilding] = useState("blacksmith");
   const [travelingTo, setTravelingTo] = useState(null);
   const [autoAttackEnabled, setAutoAttackEnabled] = useState(false);
@@ -1376,6 +1380,13 @@ function App() {
   const livingPartyCount = game.heroes.filter((hero) => hero.hp > 0).length;
   const battleEffectKey = battle ? [battle.hitSide || "", battle.skillEffect?.id || "", ...(battle.floaters || []).map((floater) => floater.id)].join("|") : "";
   const introActive = !game.progress?.storyIntroSeen;
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setLoading((current) => ({ ...current, active: false }));
+    }, BOOT_LOADING_MS);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   function playAudio(ref) {
     const audio = ref.current;
@@ -1573,9 +1584,9 @@ function App() {
           log: ["The route failed to load safely. Your campaign was kept intact.", ...current.log].slice(0, 12),
         }));
       } finally {
-        window.setTimeout(() => setLoading((current) => ({ ...current, active: false })), 250);
+        window.setTimeout(() => setLoading((current) => ({ ...current, active: false })), LOADING_EXIT_MS);
       }
-    }, 650);
+    }, ROUTE_LOADING_MS);
   }
 
   function navigate(screen) {
@@ -1589,7 +1600,8 @@ function App() {
       setIsAutoActing(false);
     }
     setPartyOpen(false);
-    setGame((current) => ({ ...current, screen }));
+    const tip = LOADING_TIPS[Math.floor(Math.random() * LOADING_TIPS.length)];
+    withLoading(tip, () => setGame((current) => ({ ...current, screen })));
   }
 
   function startNode(nodeId) {
