@@ -1,0 +1,7 @@
+node_modules/
+dist/
+dev-server*.log
+*.local
+src/assets/_source/
+
+.vercel
