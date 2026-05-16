@@ -3395,6 +3395,10 @@ function WorkerDispatchPanel({ dispatch, used, focus, onDispatch }) {
 function VillageTabContent({ tab, buildings, resources, heroes, quests, questProgress, selectedBuilding, activeBuilding, activeLevel, activeCost, progress, now, upgrades, availableWorkers, woundedCount, fallenCount, chestClaimed, workerFocus, supportReward, supportClaimed, dispatch, dispatchUsed, onSelectBuilding, onUpgrade, onCollect, onDispatch, onClaimChest, onSetWorkerFocus, onHeal, onRevive, shopUnlocked, onOpenShop }) {
   const fallenHeroes = heroes.filter((hero) => hero.hp <= 0);
   const reviveCost = reviveFee(fallenHeroes);
+  const chapelLevel = buildings.chapel || 0;
+  const chapelHealCost = { gold: 18 + chapelLevel * 8, essence: chapelLevel >= 3 ? 1 : 0 };
+  const canHealAtChapel = chapelLevel > 0 && woundedCount > 0 && canPay(resources, chapelHealCost);
+  const canReviveAtChapel = chapelLevel > 0 && fallenCount > 0 && canPay(resources, reviveCost);
 
   if (tab === "buildings") {
     return (
@@ -3584,11 +3588,11 @@ function VillageTabContent({ tab, buildings, resources, heroes, quests, questPro
           </div>
         ) : null}
         <div className="mt-3 grid gap-2">
-          <button type="button" onClick={onHeal} className="flex items-center gap-3 rounded-sm border border-amber-500/35 bg-amber-950/35 p-2 text-left text-amber-100">
+          <button type="button" onClick={onHeal} disabled={!canHealAtChapel} className="flex items-center gap-3 rounded-sm border border-amber-500/35 bg-amber-950/35 p-2 text-left text-amber-100 disabled:cursor-not-allowed disabled:border-stone-700 disabled:bg-stone-950/65 disabled:text-stone-500">
             <PixelImage src={asset("icons/chapel_heal_party", ASSETS.skills.radiant)} className="h-10 w-10" />
             <span><span className="block font-display">Heal Party</span><span className="text-xs text-stone-400">Restore HP, MP, and cleanse effects.</span></span>
           </button>
-          <button type="button" onClick={onRevive} className="flex items-center gap-3 rounded-sm border border-amber-500/35 bg-amber-950/35 p-2 text-left text-amber-100">
+          <button type="button" onClick={onRevive} disabled={!canReviveAtChapel} className="flex items-center gap-3 rounded-sm border border-amber-500/35 bg-amber-950/35 p-2 text-left text-amber-100 disabled:cursor-not-allowed disabled:border-stone-700 disabled:bg-stone-950/65 disabled:text-stone-500">
             <PixelImage src={asset("icons/chapel_revive_party", ASSETS.skills.radiant)} className="h-10 w-10" />
             <span><span className="block font-display">Revive Party</span><span className="text-xs text-stone-400">Bring fallen heroes back to battle.</span></span>
           </button>
